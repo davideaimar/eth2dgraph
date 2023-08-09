@@ -1,0 +1,212 @@
+<Account.address>: string @index(hash) @upsert .
+<Account.tags>: [string] @index(hash) .
+<Account.is_contract>: bool @index(bool) .
+<Block.base_fee_per_gas>: float .
+<Block.datetime>: datetime @index(hour) .
+<Block.difficulty>: string @index(hash) .
+<Block.gas_limit>: int .
+<Block.gas_used>: int @index(int) .
+<Block.gas_price_avg>: float @index(float) .
+<Block.gas_price_max>: float .
+<Block.gas_price_min>: float .
+<Block.gas_price_std_dev>: float .
+<Block.number>: int @index(int) @upsert .
+<Block.size>: int .
+<Block.tx_count>: int .
+<Block.miner>: uid @reverse .
+<Block.withdrawals>: [uid] @reverse .
+<ContractDeployment.block>: uid @reverse .
+<ContractDeployment.contract>: uid @reverse .
+<ContractDeployment.creation_bytecode>: string .
+<ContractDeployment.creator>: uid @reverse .
+<ContractDeployment.deployed_bytecode>: string .
+<ContractDeployment.experimental>: bool .
+<ContractDeployment.failed_deploy>: bool .
+<ContractDeployment.skeleton>: uid @reverse .
+<ContractDeployment.solc_version>: string .
+<ContractDeployment.storage_address>: string .
+<ContractDeployment.storage_protocol>: string .
+<ContractDeployment.tx_hash>: string @index(hash) .
+<ContractDeployment.name>: string @index(trigram) .
+<ContractDeployment.verified_source>: bool @index(bool) .
+<ContractDeployment.verified_source_code>: string @index(term) .
+<ContractDestruction.balance_left>: string .
+<ContractDestruction.block>: uid @reverse .
+<ContractDestruction.contract>: uid @reverse .
+<ContractDestruction.refound_address>: uid .
+<ContractDestruction.failed>: bool @index(bool) .
+<ContractDestruction.tx_hash>: string @index(hash) .
+<Error.inputs>: string @index(trigram) .
+<Error.name>: string @index(exact) .
+<Error.signature>: string @index(hash) @upsert .
+<Event.inputs>: string @index(trigram) .
+<Event.name>: string @index(exact) .
+<Event.signature>: string @index(hash) @upsert .
+<Function.inputs>: string @index(trigram) .
+<Function.name>: string @index(exact) .
+<Function.bytes4>: string @index(hash) .
+<Function.outputs>: string @index(trigram) .
+<Function.signature>: string @index(hash) @upsert .
+<Skeleton.bytecode>: string @index(hash) .
+<Skeleton.erc20_compliancy>: int @index(int) .
+<Skeleton.erc721_compliancy>: int @index(int) .
+<Skeleton.errors>: [uid] @reverse .
+<Skeleton.events>: [uid] @reverse .
+<Skeleton.failed_decompilation>: bool .
+<Skeleton.functions>: [uid] @reverse .
+<Skeleton.similar_code>: [uid] .
+<Skeleton.similar_interface>: [uid] .
+<TokenTransfer.block>: uid @reverse .
+<TokenTransfer.contract>: uid @reverse .
+<TokenTransfer.from>: uid @reverse .
+<TokenTransfer.to>: uid @reverse .
+<TokenTransfer.tx>: uid .
+<TokenTransfer.value>: string .
+<TokenTransfer.token_id>: string @index(hash) .
+<Transaction.block>: uid @reverse .
+<Transaction.from>: uid @reverse .
+<Transaction.gas>: int .
+<Transaction.gas_price>: int .
+<Transaction.hash>: string @index(hash) @upsert .
+<Transaction.input>: string .
+<Transaction.bytes4>: string @index(hash) .
+<Transaction.max_fee_per_gas>: int .
+<Transaction.max_priority_fee_per_gas>: int .
+<Transaction.nonce>: int .
+<Transaction.r>: string .
+<Transaction.s>: string .
+<Transaction.to>: uid @reverse .
+<Transaction.v>: string .
+<Transaction.value>: string .
+<Log.contract>: uid @reverse .
+<Log.block>: uid @reverse .
+<Log.tx>: uid @reverse .
+<Log.topic_0>: string @index(hash) .
+<Log.topic_1>: string @index(hash) .
+<Log.topic_2>: string @index(hash) .
+<Log.topic_3>: string @index(hash) .
+<Log.data>: string .
+<Log.tx_index>: int .
+<Log.index>: int .
+<Withdrawal.address>: uid @reverse .
+<Withdrawal.string>: int .
+<Withdrawal.index>: int .
+<Withdrawal.validator_index>: int .
+<Withdrawal.amount>: int .
+type <Account> {
+	Account.address
+	Account.tags
+	Account.is_contract
+}
+type <Block> {
+	Block.number
+	Block.datetime
+	Block.difficulty
+	Block.tx_count
+	Block.gas_price_min
+	Block.gas_price_max
+	Block.gas_price_avg
+	Block.gas_price_std_dev
+	Block.gas_limit
+	Block.gas_used
+	Block.base_fee_per_gas
+	Block.size
+	Block.miner
+	Block.withdrawals
+}
+type <ContractDeployment> {
+	ContractDeployment.contract
+	ContractDeployment.block
+	ContractDeployment.creator
+	ContractDeployment.tx_hash
+	ContractDeployment.failed_deploy
+	ContractDeployment.creation_bytecode
+	ContractDeployment.deployed_bytecode
+	ContractDeployment.skeleton
+	ContractDeployment.storage_protocol
+	ContractDeployment.storage_address
+	ContractDeployment.experimental
+	ContractDeployment.solc_version
+	ContractDeployment.verified_source
+	ContractDeployment.verified_source_code
+	ContractDeployment.name
+}
+type <ContractDestruction> {
+	ContractDestruction.contract
+	ContractDestruction.block
+	ContractDestruction.tx_hash
+	ContractDestruction.balance_left
+	ContractDestruction.refound_address
+	ContractDestruction.failed
+}
+type <Error> {
+	Error.signature
+	Error.name
+	Error.inputs
+}
+type <Event> {
+	Event.signature
+	Event.name
+	Event.inputs
+}
+type <Function> {
+	Function.signature
+	Function.name
+	Function.inputs
+	Function.outputs
+}
+type <Skeleton> {
+	Skeleton.bytecode
+	Skeleton.functions
+	Skeleton.events
+	Skeleton.errors
+	Skeleton.failed_decompilation
+	Skeleton.erc20_compliancy
+	Skeleton.erc721_compliancy
+	Skeleton.similar_code
+	Skeleton.similar_interface
+}
+type <TokenTransfer> {
+	TokenTransfer.contract
+	TokenTransfer.from
+	TokenTransfer.to
+	TokenTransfer.value
+	TokenTransfer.block
+	TokenTransfer.tx
+	TokenTransfer.token_id
+}
+type <Transaction> {
+	Transaction.hash
+	Transaction.from
+	Transaction.to
+	Transaction.block
+	Transaction.value
+	Transaction.gas
+	Transaction.gas_price
+	Transaction.input
+	Transaction.bytes4
+	Transaction.max_fee_per_gas
+	Transaction.max_priority_fee_per_gas
+	Transaction.nonce
+	Transaction.r
+	Transaction.s
+	Transaction.v
+}
+type <Log> {
+	Log.contract
+	Log.block
+	Log.tx
+	Log.topic_0
+	Log.topic_1
+	Log.topic_2
+	Log.topic_3
+	Log.data
+	Log.tx_index
+	Log.index
+}
+type <Withdrawal> {
+	Withdrawal.address
+	Withdrawal.amount
+	Withdrawal.index
+	Withdrawal.validator_index
+}

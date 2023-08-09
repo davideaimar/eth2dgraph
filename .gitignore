@@ -1,0 +1,15 @@
+target
+.env
+.tmp
+output
+**/ignored
+.vscode
+.idea
+**/.venv
+smart-contract-sanctuary-ethereum
+run*
+logs*
+*.cache
+out
+extracted
+**/extracted*

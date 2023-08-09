@@ -1,0 +1,150 @@
+type Account {
+  address: String! @id @search(by: [hash])
+  tags: [String] @search(by: [hash])
+  is_contract: Boolean @search
+  token_sent: [TokenTransfer] @dgraph(pred: "~TokenTransfer.from")
+  token_received: [TokenTransfer] @dgraph(pred: "~TokenTransfer.to")
+  transactions_sent: [Transaction] @dgraph(pred: "~Transaction.from")
+  transactions_received: [Transaction] @dgraph(pred: "~Transaction.to")
+  created_contracts: [ContractDeployment] @dgraph(pred: "~ContractDeployment.creator")
+  logs: [Log] @dgraph(pred: "~Log.contract")
+  deployments: [ContractDeployment] @dgraph(pred:"~ContractDeployment.contract")
+  destructions: [ContractDestruction] @dgraph(pred:"~ContractDestruction.contract")
+  transfers: [TokenTransfer] @dgraph(pred: "~TokenTransfer.contract")
+  mined_blocks: [Block] @dgraph(pred:"~Block.miner")
+  withdrawals: [Withdrawal] @dgraph(pred:"~Withdrawal.address")
+}
+
+type Withdrawal {
+  amount: String! @search
+  index: Int
+  validator_index: Int
+  address: Account! @dgraph(pred:"Withdrawal.address")
+  block: [Block] @dgraph(pred:"~Block.withdrawals")
+}
+
+type Block {
+  number: Int! @id @search
+  miner: Account @dgraph(pred:"Block.miner")
+  datetime: DateTime @search(by: [hour])
+  difficulty: String @search
+  tx_count: Int @search
+  gas_price_min: Float
+  gas_price_max: Float
+  gas_price_avg: Float @search
+  gas_price_std_dev: Float
+  gas_limit: Int
+  gas_used: Int
+  base_fee_per_gas: Float
+  size: Int
+  deployments: [ContractDeployment] @dgraph(pred: "~ContractDeployment.block")
+  destructions: [ContractDestruction] @dgraph(pred: "~ContractDestruction.block")
+  transfers: [TokenTransfer] @dgraph(pred: "~TokenTransfer.block")
+  transactions: [Transaction] @dgraph(pred: "~Transaction.block")
+  withdrawals: [Withdrawal] @dgraph(pred:"Block.withdrawals")
+  logs: [Log] @dgraph(pred: "~Log.block")
+}
+
+type Transaction {
+  hash: String! @id @search(by: [hash])
+  value: String! 
+  gas: Int @search
+  gas_price: Int @search
+  input: String
+  bytes4: String @search(by: [hash])
+  max_fee_per_gas: Int
+  max_priority_fee_per_gas: Int
+  nonce: Int
+  r: String
+  s: String
+  v: String
+  from: Account! @dgraph(pred:"Transaction.from")
+  to: Account! @dgraph(pred:"Transaction.to")
+  block: Block! @dgraph(pred:"Transaction.block")
+  logs: [Log] @dgraph(pred: "~Log.tx")
+}
+
+type Function {
+  signature: String! @id @search(by: [hash])
+  name: String @search(by: [exact])
+  inputs: String @search(by: [trigram])
+  outputs: String @search(by: [trigram])
+  skeletons: [Skeleton] @dgraph(pred:"~Skeleton.functions")
+  bytes4: String @search(by: [hash])
+}
+
+type Event {
+  signature: String! @id @search(by: [hash])
+  name: String @search(by: [exact])
+  inputs: String @search(by: [trigram])
+  skeletons: [Skeleton] @dgraph(pred:"~Skeleton.events")
+}
+
+type Error {
+  signature: String! @id @search(by: [hash])
+  name: String @search(by: [exact])
+  inputs: String @search(by: [trigram])
+  skeletons: [Skeleton] @dgraph(pred:"~Skeleton.errors")
+}
+
+type ContractDeployment {
+  tx_hash: String @search(by: [hash])
+  failed_deploy: Boolean @search
+  creation_bytecode: String
+  deployed_bytecode: String
+  storage_protocol: String
+  storage_address: String
+  experimental: Boolean @search
+  solc_version: String @search(by: [hash])
+  verified_source: Boolean @search
+  verified_source_code: String @search(by: [term])
+  name: String @search(by: [trigram])
+  contract: Account! @dgraph(pred:"ContractDeployment.contract")
+  block: Block! @dgraph(pred:"ContractDeployment.block")
+  creator: Account! @dgraph(pred:"ContractDeployment.creator")
+  skeleton: Skeleton @dgraph(pred:"ContractDeployment.skeleton")
+}
+
+type ContractDestruction {
+  tx_hash: String @search(by: [hash])
+  balance_left: String
+  refound_address: Account! @dgraph(pred:"ContractDestruction.refound_address")
+  contract: Account! @dgraph(pred:"ContractDestruction.contract")
+  block: Block! @dgraph(pred:"ContractDestruction.block")
+}
+
+type Skeleton {
+  bytecode: String! @search(by: [hash])
+  erc20_compliancy: Int @search
+  erc721_compliancy: Int @search
+  failed_decompilation: Boolean @search
+  deployments: [ContractDeployment] @dgraph(pred:"~ContractDeployment.skeleton")
+  functions: [Function] @dgraph(pred:"Skeleton.functions")
+  events: [Event] @dgraph(pred:"Skeleton.events")
+  errors: [Error] @dgraph(pred:"Skeleton.errors")
+  similar_code: [Skeleton]
+  similar_interface: [Skeleton]
+}
+
+type TokenTransfer {
+  value: String!
+  token_id: String
+  tx: Transaction
+  block: Block! @dgraph(pred:"TokenTransfer.block")
+  contract: Account! @dgraph(pred:"TokenTransfer.contract")
+  from: Account! @dgraph(pred:"TokenTransfer.from")
+  to: Account! @dgraph(pred:"TokenTransfer.to")
+}
+
+type Log {
+  topic_0: String @search(by: [hash])
+  topic_1: String @search(by: [hash])
+  topic_2: String @search(by: [hash])
+  topic_3: String @search(by: [hash])
+  data: String 
+  tx_index: Int
+  index: Int
+  contract: Account! @dgraph(pred:"Log.contract")
+  block: Block @dgraph(pred:"Log.block")
+  tx: Transaction @dgraph(pred:"Log.tx")
+}

@@ -1,0 +1,31 @@
+version: "3.2"
+
+services:
+  zero:
+    image: dgraph/dgraph:latest
+    volumes:
+      - ./dgraph:/utils:ro
+      - ./dgraph-data:/dgraph
+    ports:
+      - 5081:5080
+      - 6081:6080
+    restart: on-failure
+    command: dgraph zero --my=zero:5080
+  alpha:
+    image: dgraph/dgraph:latest
+    working_dir: /dgraph/out/0
+    volumes:
+      - ./dgraph-data:/dgraph
+    ports:
+      - 8081:8080
+      - 9081:9080
+    restart: on-failure
+    command: 'dgraph alpha --my=alpha:7080 --zero=zero:5080 --security whitelist=0.0.0.0/0 --badger="compression=snappy; numgoroutines=64;" '
+  ratel:
+    image: dgraph/ratel:latest
+    ports:
+      - 8001:8000
+
+
+volumes:
+  grafana-data:
